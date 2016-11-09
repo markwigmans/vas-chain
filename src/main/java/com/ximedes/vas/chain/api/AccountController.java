@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -54,9 +55,9 @@ class AccountController {
     public ResponseEntity queryAccount(@PathVariable String accountId) throws ChainException {
         log.debug("queryAccount({})", accountId);
 
-        final Account account = accountService.queryAccount(accountId);
-        if (account != null) {
-            return new ResponseEntity(account, HttpStatus.OK);
+        final Optional<Account> account = accountService.queryAccount(accountId);
+        if (account.isPresent()) {
+            return new ResponseEntity(account.get(), HttpStatus.OK);
         } else {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }

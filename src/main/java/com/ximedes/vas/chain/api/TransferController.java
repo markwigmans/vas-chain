@@ -57,7 +57,7 @@ class TransferController {
 
         final Optional<Transfer> transfer = transferService.queryTransfer(transferId);
         if (transfer.isPresent())
-            return new ResponseEntity(transfer, HttpStatus.OK);
+            return new ResponseEntity(transfer.get(), HttpStatus.OK);
         else
             return new ResponseEntity(HttpStatus.NOT_FOUND);
     }

@@ -28,12 +28,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
 public class TransferService {
+
+    private static final String KEY = "transferId";
 
     private final Client client;
     private final MockHsm.Key key;
@@ -50,36 +55,53 @@ public class TransferService {
         this.eur = assets.getEur();
     }
 
+    @PostConstruct
+    void init() {
+        reset();
+    }
+
     public Transfer createTransfer(final Transfer request) throws ChainException {
-        final int transferId = counter.incrementAndGet();
+        final String alias = Integer.toString(counter.incrementAndGet());
         Transaction.Template spending = new Transaction.Builder()
                 .addAction(new Transaction.Action.SpendFromAccount()
                         .setAccountAlias(request.getFrom())
                         .setAssetAlias(eur.alias)
-                        .setAmount(request.getAmount()))
+                        .setAmount(request.getAmount())
+                        .addReferenceDataField(KEY, alias))
                 .addAction(new Transaction.Action.ControlWithAccount().setAccountAlias(request.getTo())
                         .setAssetAlias(eur.alias)
-                        .setAmount(request.getAmount()))
+                        .setAmount(request.getAmount())
+                        .addReferenceDataField(KEY, alias))
                 .build(client);
 
         Transaction.submit(client, HsmSigner.sign(spending));
 
-        return Transfer.builder().transferId(Integer.toString(transferId)).build();
+        return Transfer.builder().transferId(alias).build();
+    }
+
+    public void reset() {
+        counter.set(0);
     }
 
     public Optional<Transfer> queryTransfer(final String transferId) throws ChainException {
         Transaction.Items transactions = new Transaction.QueryBuilder()
-                .setFilter("reference_data.transferId=$1")
-                .addFilterParameter(transferId)
+                .setFilter(String.format("outputs(reference_data.%s=$1)", KEY)).addFilterParameter(transferId)
                 .execute(client);
         if (transactions.hasNext()) {
             final Transaction transaction = transactions.next();
-            final String from = transaction.inputs.get(0).accountAlias;
-            final String to = transaction.outputs.get(0).accountAlias;
-            final int amount = transaction.inputs.stream().map(i -> i.amount).reduce(0L, Long::sum).intValue();
-            return Optional.of(Transfer.builder().from(from).to(to).amount(amount).build());
+
+            final String from = transaction.inputs.stream().filter(i -> keyFound(i.referenceData)).findFirst().get().accountAlias;
+            final Transaction.Output output = transaction.outputs.stream().filter(i -> keyFound(i.referenceData)).findFirst().get();
+            final String to = output.accountAlias;
+            final int amount  = new Long(output.amount).intValue();
+
+            return Optional.of(Transfer.builder().transferId(transferId).from(from).to(to).amount(amount).build());
         } else {
             return Optional.empty();
         }
+    }
+
+    boolean keyFound(final Map<String, Object> data) {
+        return data.keySet().stream().filter(k -> KEY.equals(k)).count() != 0;
     }
 }

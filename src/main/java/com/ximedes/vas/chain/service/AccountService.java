@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -49,6 +50,11 @@ public class AccountService {
         this.client = client;
         this.key = keys.getKey();
         this.eur = assets.getEur();
+    }
+
+    @PostConstruct
+    void init() {
+        reset();
     }
 
     public Account createAccount(final Account request) throws ChainException {
@@ -89,7 +95,13 @@ public class AccountService {
         return balances.list.stream().map(b -> b.amount).reduce(0L, Long::sum);
     }
 
-    public Account queryAccount(final String accountId) throws ChainException {
-        return Account.builder().accountId(accountId).balance( getBalance(accountId).intValue()).build();
+    public Optional<Account> queryAccount(final String accountId) throws ChainException {
+        com.chain.api.Account account = findByAlias(accountId);
+        if (account != null) {
+            return Optional.of(Account.builder().accountId(accountId).balance(getBalance(accountId).intValue()).build());
+        }
+        else {
+            return Optional.empty();
+        }
     }
 }

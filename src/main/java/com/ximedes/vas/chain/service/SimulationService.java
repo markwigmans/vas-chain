@@ -59,8 +59,7 @@ public class SimulationService {
             final Account account = items.next();
             final Long balance = accountService.getBalance(account.alias);
 
-            // retire the balance of the given account
-            // TODO check retire construction
+            // retire the balance of the given account, to create a '0' balance starting point
             if (balance > 0) {
                 Transaction.Template issuance = new Transaction.Builder()
                         .addAction(new Transaction.Action.SpendFromAccount()
