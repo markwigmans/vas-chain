@@ -33,7 +33,7 @@ object Config {
   val initUsers = 1
   val rampUpInit = 1 seconds
 
-  val transfers = 1
+  val transfers = 10
   val loadUsers = 1
   val rampUpLoad = 1 seconds
 

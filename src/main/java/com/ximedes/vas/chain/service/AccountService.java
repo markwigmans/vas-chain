@@ -51,40 +51,45 @@ public class AccountService {
         this.eur = assets.getEur();
     }
 
-    @PostConstruct
-    void init() throws ChainException {
-        counter.set(countAccounts());
-    }
-
     public Account createAccount(final Account request) throws ChainException {
-        final int id = counter.incrementAndGet();
-        final com.chain.api.Account account = new com.chain.api.Account.Builder().setAlias(Integer.toString(id))
-                .addRootXpub(key.xpub).setQuorum(1).create(client);
+        final String alias = Integer.toString(counter.incrementAndGet());
+        com.chain.api.Account account = findByAlias(alias);
+        if (account == null) {
+            account = new com.chain.api.Account.Builder().setAlias(alias).addRootXpub(key.xpub).setQuorum(1).create(client);
+        }
 
         // create issue transaction
         if (request.getOverdraft() != null && request.getOverdraft() > 0) {
             Transaction.Template issuance = new Transaction.Builder()
                     .addAction(new Transaction.Action.Issue()
-                            .setAssetAlias(eur.alias)
+                            .setAssetId(eur.id)
                             .setAmount(request.getOverdraft()))
-                    .addAction(new Transaction.Action.ControlWithAccount().setAccountAlias(account.alias)
-                            .setAssetAlias(eur.alias)
+                    .addAction(new Transaction.Action.ControlWithAccount().setAccountId(account.id)
+                            .setAssetId(eur.id)
                             .setAmount(request.getOverdraft()))
                     .build(client);
 
             Transaction.submit(client, HsmSigner.sign(issuance));
         }
 
-        return Account.builder().accountId(Integer.toString(id)).build();
+        return Account.builder().accountId(alias).build();
+    }
+
+    public void reset() {
+        counter.set(0);
+    }
+
+    com.chain.api.Account findByAlias(final String alias) throws ChainException {
+        final com.chain.api.Account.Items items = new com.chain.api.Account.QueryBuilder().setFilter("alias=$1").addFilterParameter(alias).execute(client);
+        return items.hasNext() ? items.next() : null;
+    }
+
+    public Long getBalance(final String accountId) throws ChainException {
+        Balance.Items balances = new Balance.QueryBuilder().setFilter("account_alias=$1").addFilterParameter(accountId).execute(client);
+        return balances.list.stream().map(b -> b.amount).reduce(0L, Long::sum);
     }
 
     public Account queryAccount(final String accountId) throws ChainException {
-        Balance.Items balances = new Balance.QueryBuilder().setFilter("account_alias=$1").addFilterParameter(accountId).execute(client);
-        final int balance = balances.list.stream().map(b -> b.amount).reduce(0L, Long::sum).intValue();
-        return Account.builder().accountId(accountId).balance(balance).build();
-    }
-
-    int countAccounts() throws ChainException {
-        return new com.chain.api.Account.QueryBuilder().execute(client).list.size();
+        return Account.builder().accountId(accountId).balance( getBalance(accountId).intValue()).build();
     }
 }

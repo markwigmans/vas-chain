@@ -13,28 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.ximedes.vas.chain;
+package com.ximedes.vas.chain.data;
 
+import com.chain.api.Asset;
 import com.chain.api.MockHsm;
 import com.chain.exception.ChainException;
 import com.chain.http.Client;
 import com.chain.signing.HsmSigner;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
- * Created by mawi on 04/11/2016.
+ *
  */
-@Configuration
-public class Config {
+@Component
+public class Keys {
 
     @Autowired
     private Client client;
 
-    @Bean
-    Client client() throws ChainException {
-        Client client = new Client();
-        return client;
+    @Getter
+    private MockHsm.Key key;
+
+
+    @PostConstruct
+    public void init() throws ChainException {
+        final String alias = "vas";
+        key = findByAlias(alias);
+        if (key == null) {
+            key = MockHsm.Key.create(client, alias);
+            HsmSigner.addKey(key, MockHsm.getSignerClient(client));
+        }
+    }
+
+    MockHsm.Key findByAlias(final String alias) throws ChainException {
+        final MockHsm.Key.Items items = new MockHsm.Key.QueryBuilder().addAlias(alias).execute(client);
+        return items.hasNext() ? items.next() : null;
     }
 }
