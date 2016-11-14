@@ -77,12 +77,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-            <dependency>
-                <groupId>io.gatling.highcharts</groupId>
-                <artifactId>gatling-charts-highcharts</artifactId>
-                <version>2.2.2</version>
-                <scope>test</scope>
-            </dependency>
+        <dependency>
+            <groupId>io.gatling.highcharts</groupId>
+            <artifactId>gatling-charts-highcharts</artifactId>
+            <version>2.2.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -153,7 +153,6 @@
     </build>
 
     <repositories>
-        <!--other repositories if any-->
         <repository>
             <id>project.local</id>
             <name>project</name>

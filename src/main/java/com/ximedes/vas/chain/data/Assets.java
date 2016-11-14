@@ -48,7 +48,7 @@ public class Assets {
 
     @PostConstruct
     public void init() throws ChainException {
-        final String assetName = "eur";
+        final String assetName = "eurocents";
         eur = findByAlias(assetName);
         if (eur == null) {
             eur = new Asset.Builder().setAlias(assetName).addRootXpub(key.xpub).setQuorum(1).create(client);
