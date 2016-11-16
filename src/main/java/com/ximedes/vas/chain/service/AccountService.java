@@ -99,8 +99,7 @@ public class AccountService {
         com.chain.api.Account account = findByAlias(accountId);
         if (account != null) {
             return Optional.of(Account.builder().accountId(accountId).balance(getBalance(accountId).intValue()).build());
-        }
-        else {
+        } else {
             return Optional.empty();
         }
     }

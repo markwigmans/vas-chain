@@ -15,14 +15,12 @@
  */
 package com.ximedes.vas.chain.data;
 
-import com.chain.api.Asset;
 import com.chain.api.MockHsm;
 import com.chain.exception.ChainException;
 import com.chain.http.Client;
 import com.chain.signing.HsmSigner;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -38,7 +36,6 @@ public class Keys {
 
     @Getter
     private MockHsm.Key key;
-
 
     @PostConstruct
     public void init() throws ChainException {

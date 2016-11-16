@@ -17,18 +17,14 @@ package com.ximedes.vas.chain;
 
 import com.chain.exception.ChainException;
 import com.chain.http.Client;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Created by mawi on 04/11/2016.
+ * Configuration / Bean definitions
  */
 @Configuration
 public class Config {
-
-    @Autowired
-    private Client client;
 
     @Bean
     Client client() throws ChainException {

@@ -55,7 +55,7 @@ public class SimulationService {
      */
     void resetAccounts() throws ChainException {
         final Account.Items items = new Account.QueryBuilder().execute(client);
-        while(items.hasNext()) {
+        while (items.hasNext()) {
             final Account account = items.next();
             final Long balance = accountService.getBalance(account.alias);
 

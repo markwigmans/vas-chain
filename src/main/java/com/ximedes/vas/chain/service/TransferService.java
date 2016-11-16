@@ -32,7 +32,6 @@ import javax.annotation.PostConstruct;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -41,7 +40,6 @@ public class TransferService {
     private static final String KEY = "transferId";
 
     private final Client client;
-    private final MockHsm.Key key;
     private final Asset eur;
     private final AtomicInteger counter = new AtomicInteger();
 
@@ -49,9 +47,8 @@ public class TransferService {
      * Auto wired constructor
      */
     @Autowired
-    public TransferService(Client client, Keys keys, Assets assets) {
+    public TransferService(Client client, Assets assets) {
         this.client = client;
-        this.key = keys.getKey();
         this.eur = assets.getEur();
     }
 
@@ -93,7 +90,7 @@ public class TransferService {
             final String from = transaction.inputs.stream().filter(i -> keyFound(i.referenceData)).findFirst().get().accountAlias;
             final Transaction.Output output = transaction.outputs.stream().filter(i -> keyFound(i.referenceData)).findFirst().get();
             final String to = output.accountAlias;
-            final int amount  = new Long(output.amount).intValue();
+            final int amount = new Long(output.amount).intValue();
 
             return Optional.of(Transfer.builder().transferId(transferId).from(from).to(to).amount(amount).build());
         } else {
