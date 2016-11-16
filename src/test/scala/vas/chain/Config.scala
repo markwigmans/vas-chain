@@ -28,14 +28,12 @@ object Config {
   // URL of the System Under Test
   val httpConf = http.baseURL("http://localhost:8080/")
 
-  val accounts = 10
-  val merchants = 2
-  val initUsers = 1
+  val accounts = 1000
+  val merchants = 50
+  val initUsers = 10
   val rampUpInit = 1 seconds
 
-  val transfers = 10
-  val loadUsers = 1
+  val transfers = 1000
+  val loadUsers = 10
   val rampUpLoad = 1 seconds
-
-
 }

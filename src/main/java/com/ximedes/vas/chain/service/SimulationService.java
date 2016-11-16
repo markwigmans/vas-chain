@@ -57,20 +57,26 @@ public class SimulationService {
         final Account.Items items = new Account.QueryBuilder().execute(client);
         while (items.hasNext()) {
             final Account account = items.next();
-            final Long balance = accountService.getBalance(account.alias);
+            log.info("reset account: {}", account.alias);
+            try {
+                final Long balance = accountService.getBalance(account.alias);
 
-            // retire the balance of the given account, to create a '0' balance starting point
-            if (balance > 0) {
-                Transaction.Template issuance = new Transaction.Builder()
-                        .addAction(new Transaction.Action.SpendFromAccount()
-                                .setAccountId(account.id)
-                                .setAssetId(eur.id).setAmount(balance))
-                        .addAction(new Transaction.Action.Retire()
-                                .setAssetId(eur.id)
-                                .setAmount(balance))
-                        .build(client);
+                // retire the balance of the given account, to create a '0' balance starting point
+                if (balance > 0) {
+                    Transaction.Template issuance = new Transaction.Builder()
+                            .addAction(new Transaction.Action.SpendFromAccount()
+                                    .setAccountId(account.id)
+                                    .setAssetId(eur.id)
+                                    .setAmount(balance))
+                            .addAction(new Transaction.Action.Retire()
+                                    .setAssetId(eur.id)
+                                    .setAmount(balance))
+                            .build(client);
 
-                Transaction.submit(client, HsmSigner.sign(issuance));
+                    Transaction.submit(client, HsmSigner.sign(issuance));
+                }
+            } catch (ChainException e) {
+                log.warn("Reset Exception, account ({}) : {}", account.alias, e.toString());
             }
         }
     }

@@ -59,6 +59,9 @@ public class AccountService {
 
     public Account createAccount(final Account request) throws ChainException {
         final String alias = Integer.toString(counter.incrementAndGet());
+
+        log.info("createAccount({})", alias);
+
         com.chain.api.Account account = findByAlias(alias);
         if (account == null) {
             account = new com.chain.api.Account.Builder().setAlias(alias).addRootXpub(key.xpub).setQuorum(1).create(client);
@@ -85,14 +88,24 @@ public class AccountService {
         counter.set(0);
     }
 
-    com.chain.api.Account findByAlias(final String alias) throws ChainException {
-        final com.chain.api.Account.Items items = new com.chain.api.Account.QueryBuilder().setFilter("alias=$1").addFilterParameter(alias).execute(client);
-        return items.hasNext() ? items.next() : null;
+    com.chain.api.Account findByAlias(final String alias) {
+        try {
+            final com.chain.api.Account.Items items = new com.chain.api.Account.QueryBuilder().setFilter("alias=$1").addFilterParameter(alias).execute(client);
+            return items.hasNext() ? items.next() : null;
+        } catch (ChainException e) {
+            log.warn("Exception", e);
+        }
+        return null;
     }
 
-    public Long getBalance(final String accountId) throws ChainException {
-        Balance.Items balances = new Balance.QueryBuilder().setFilter("account_alias=$1").addFilterParameter(accountId).execute(client);
-        return balances.list.stream().map(b -> b.amount).reduce(0L, Long::sum);
+    public Long getBalance(final String accountId) {
+        try {
+            Balance.Items balances = new Balance.QueryBuilder().setFilter("account_alias=$1").addFilterParameter(accountId).execute(client);
+            return balances.list.stream().map(b -> b.amount).reduce(0L, Long::sum);
+        } catch (ChainException e) {
+            log.warn("Exception", e);
+        }
+        return 0L;
     }
 
     public Optional<Account> queryAccount(final String accountId) throws ChainException {

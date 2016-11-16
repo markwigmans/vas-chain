@@ -57,23 +57,29 @@ public class TransferService {
         reset();
     }
 
-    public Transfer createTransfer(final Transfer request) throws ChainException {
+    public Transfer createTransfer(final Transfer request) {
         final String alias = Integer.toString(counter.incrementAndGet());
-        Transaction.Template spending = new Transaction.Builder()
-                .addAction(new Transaction.Action.SpendFromAccount()
-                        .setAccountAlias(request.getFrom())
-                        .setAssetAlias(eur.alias)
-                        .setAmount(request.getAmount())
-                        .addReferenceDataField(KEY, alias))
-                .addAction(new Transaction.Action.ControlWithAccount().setAccountAlias(request.getTo())
-                        .setAssetAlias(eur.alias)
-                        .setAmount(request.getAmount())
-                        .addReferenceDataField(KEY, alias))
-                .build(client);
+        Transfer.Status status = Transfer.Status.CONFIRMED;
+        try {
+            Transaction.Template spending = new Transaction.Builder()
+                    .addAction(new Transaction.Action.SpendFromAccount()
+                            .setAccountAlias(request.getFrom())
+                            .setAssetAlias(eur.alias)
+                            .setAmount(request.getAmount())
+                            .addReferenceDataField(KEY, alias))
+                    .addAction(new Transaction.Action.ControlWithAccount().setAccountAlias(request.getTo())
+                            .setAssetAlias(eur.alias)
+                            .setAmount(request.getAmount())
+                            .addReferenceDataField(KEY, alias))
+                    .build(client);
 
-        Transaction.submit(client, HsmSigner.sign(spending));
+            Transaction.submit(client, HsmSigner.sign(spending));
+        } catch (ChainException e) {
+            log.warn("Exception", e);
+            status = Transfer.Status.INSUFFICIENT_FUNDS;
+        }
 
-        return Transfer.builder().transferId(alias).build();
+        return Transfer.builder().transferId(alias).status(status).build();
     }
 
     public void reset() {
