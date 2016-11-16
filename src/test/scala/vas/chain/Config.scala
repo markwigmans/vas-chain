@@ -30,7 +30,7 @@ object Config {
 
   val accounts = 1000
   val merchants = 50
-  val initUsers = 10
+  val initUsers = 1
   val rampUpInit = 1 seconds
 
   val transfers = 1000

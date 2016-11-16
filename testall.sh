@@ -17,3 +17,4 @@
 mvn gatling:execute -Dgatling.simulationClass=vas.chain.ResetSimulation
 mvn gatling:execute -Dgatling.simulationClass=vas.chain.InitSimulation
 mvn gatling:execute -Dgatling.simulationClass=vas.chain.LoadSimulation
+mvn gatling:execute -Dgatling.simulationClass=vas.chain.CheckSimulation

@@ -93,7 +93,7 @@ public class AccountService {
             final com.chain.api.Account.Items items = new com.chain.api.Account.QueryBuilder().setFilter("alias=$1").addFilterParameter(alias).execute(client);
             return items.hasNext() ? items.next() : null;
         } catch (ChainException e) {
-            log.warn("Exception", e);
+            log.warn("findByAlias() : Exception: {}", e.toString());
         }
         return null;
     }
@@ -103,7 +103,7 @@ public class AccountService {
             Balance.Items balances = new Balance.QueryBuilder().setFilter("account_alias=$1").addFilterParameter(accountId).execute(client);
             return balances.list.stream().map(b -> b.amount).reduce(0L, Long::sum);
         } catch (ChainException e) {
-            log.warn("Exception", e);
+            log.warn("getBalance() : Exception: {}", e.toString());
         }
         return 0L;
     }

@@ -59,7 +59,7 @@ public class SimulationService {
             final Account account = items.next();
             log.info("reset account: {}", account.alias);
             try {
-                final Long balance = accountService.getBalance(account.alias);
+                final long balance = accountService.getBalance(account.alias).longValue();
 
                 // retire the balance of the given account, to create a '0' balance starting point
                 if (balance > 0) {

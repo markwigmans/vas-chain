@@ -75,7 +75,7 @@ public class TransferService {
 
             Transaction.submit(client, HsmSigner.sign(spending));
         } catch (ChainException e) {
-            log.warn("Exception", e);
+            log.warn("createTransfer({} -> {}) : Exception: {}", request.getFrom(), request.getTo(), e.toString());
             status = Transfer.Status.INSUFFICIENT_FUNDS;
         }
 

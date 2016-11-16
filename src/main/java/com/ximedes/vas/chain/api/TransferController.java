@@ -41,7 +41,7 @@ class TransferController {
     }
 
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
-    public ResponseEntity createTransfer(@RequestBody Transfer request) throws ChainException {
+    public ResponseEntity createTransfer(@RequestBody Transfer request) {
         log.info("createTransfer({})", request);
 
         final Transfer transfer = transferService.createTransfer(request);
