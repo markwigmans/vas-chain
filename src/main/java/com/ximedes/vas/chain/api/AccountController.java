@@ -55,6 +55,7 @@ class AccountController {
         if (account.isPresent()) {
             return new ResponseEntity(account.get(), HttpStatus.OK);
         } else {
+            log.warn("queryAccount({}) : not found", accountId);
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
     }

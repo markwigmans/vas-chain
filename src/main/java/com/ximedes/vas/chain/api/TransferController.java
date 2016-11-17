@@ -56,10 +56,13 @@ class TransferController {
         log.debug("queryTransfer({})", transferId);
 
         final Optional<Transfer> transfer = transferService.queryTransfer(transferId);
-        if (transfer.isPresent())
+        if (transfer.isPresent()) {
             return new ResponseEntity(transfer.get(), HttpStatus.OK);
-        else
+        }
+        else {
+            log.warn("queryAccount({}) : not found", transferId);
             return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
     }
 }
 

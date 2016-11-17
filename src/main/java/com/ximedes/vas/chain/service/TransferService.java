@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -75,7 +76,7 @@ public class TransferService {
 
             Transaction.submit(client, HsmSigner.sign(spending));
         } catch (ChainException e) {
-            log.warn("createTransfer({} -> {}) : Exception: {}", request.getFrom(), request.getTo(), e.toString());
+            log.warn("createTransfer({} -> {} : {}) : Exception: {}", request.getFrom(), request.getTo(), request.getAmount(), e.toString());
             status = Transfer.Status.INSUFFICIENT_FUNDS;
         }
 
