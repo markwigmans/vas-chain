@@ -37,7 +37,7 @@ object ToMerchant {
     exec(session => {
       val from = Utils.randInt(Config.merchants + 1, Config.merchants + Config.accounts + 1)
       val to = Utils.randInt(1, Config.merchants + 1)
-      val amount = Utils.randInt(1, 1000)
+      val amount = Utils.randInt(1, 100)
       session
         .set("from", from)
         .set("to", to)
@@ -51,7 +51,7 @@ object FromMerchant {
     exec(session => {
       val from = Utils.randInt(1, Config.merchants + 1)
       val to = Utils.randInt(Config.merchants + 1, Config.merchants + Config.accounts + 1)
-      val amount = Utils.randInt(1, 1000)
+      val amount = Utils.randInt(1, 100)
       session
         .set("from", from)
         .set("to", to)

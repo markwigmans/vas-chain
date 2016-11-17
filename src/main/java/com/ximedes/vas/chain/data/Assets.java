@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 
 /**
- *
+ * Assets to be used by the transfers / balances.
  */
 @Component
 public class Assets {

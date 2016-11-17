@@ -19,7 +19,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
 /**
-  * Created by mawi on 23/07/2016.
+  *
   */
 class CheckSimulation extends Simulation {
 
@@ -43,17 +43,8 @@ class CheckSimulation extends Simulation {
         .exec(http("query transfers").get("transfer/${id}").check(status.in(200, 404)))
     }
 
-  val queryTransactionsChain =
-    repeat(transferBatchSize, "transactionId") {
-      exec((s: Session) => {
-        val id = transferBatchSize * (s.userId % Config.loadUsers) + s("transactionId").as[Int]
-        s.set("id", id)
-      })
-        .exec(http("query transactions").get("transaction/${id}").check(status.in(200, 404)))
-    }
-
   val accountScn = scenario("accounts").exec(queryAccountsChain)
-  val transferScn = scenario("transfers").exec(queryTransfersChain, queryTransactionsChain)
+  val transferScn = scenario("transfers").exec(queryTransfersChain)
 
   setUp(
     accountScn.inject(rampUsers(Config.initUsers) over (Config.rampUpInit)).protocols(Config.httpConf)

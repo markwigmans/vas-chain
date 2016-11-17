@@ -41,7 +41,7 @@ class TransferController {
     }
 
     @RequestMapping(value = "/transfer", method = RequestMethod.POST)
-    public ResponseEntity createTransfer(@RequestBody Transfer request) throws ChainException {
+    public ResponseEntity createTransfer(@RequestBody Transfer request) {
         log.info("createTransfer({})", request);
 
         final Transfer transfer = transferService.createTransfer(request);
@@ -56,10 +56,13 @@ class TransferController {
         log.debug("queryTransfer({})", transferId);
 
         final Optional<Transfer> transfer = transferService.queryTransfer(transferId);
-        if (transfer.isPresent())
+        if (transfer.isPresent()) {
             return new ResponseEntity(transfer.get(), HttpStatus.OK);
-        else
+        }
+        else {
+            log.warn("queryAccount({}) : not found", transferId);
             return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
     }
 }
 

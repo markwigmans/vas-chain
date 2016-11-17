@@ -42,8 +42,6 @@ class AccountController {
 
     @RequestMapping(value = "/account", method = RequestMethod.POST)
     public ResponseEntity createAccount(@RequestBody Account request) throws ChainException {
-        log.info("createAccount({})", request);
-
         final Account account = accountService.createAccount(request);
         final URI location = UriComponentsBuilder.newInstance().pathSegment("/account", account.getAccountId()).build().toUri();
         final HttpHeaders responseHeaders = new HttpHeaders();
@@ -53,12 +51,11 @@ class AccountController {
 
     @RequestMapping(value = "/account/{accountId}", method = RequestMethod.GET)
     public ResponseEntity queryAccount(@PathVariable String accountId) throws ChainException {
-        log.debug("queryAccount({})", accountId);
-
         final Optional<Account> account = accountService.queryAccount(accountId);
         if (account.isPresent()) {
             return new ResponseEntity(account.get(), HttpStatus.OK);
         } else {
+            log.warn("queryAccount({}) : not found", accountId);
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
     }

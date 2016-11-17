@@ -27,11 +27,20 @@ import lombok.Value;
 @Builder
 @Value
 public class Transfer {
+
+    public enum Status {
+        PENDING,
+        CONFIRMED,
+        INSUFFICIENT_FUNDS,
+        ACCOUNT_NOT_FOUND,
+        TRANSFER_NOT_FOUND
+    }
+
     String transferId;
     String from;
     String to;
     Integer amount;
-    String status;
+    Status status;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static final class TransferBuilder {
