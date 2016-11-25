@@ -28,7 +28,6 @@ public class Config {
 
     @Bean
     Client client() throws ChainException {
-        Client client = new Client();
-        return client;
+        return new Client();
     }
 }

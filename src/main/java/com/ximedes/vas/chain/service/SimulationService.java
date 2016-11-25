@@ -51,48 +51,6 @@ public class SimulationService {
 
     public void reset() throws Exception {
         log.info("Reset simulation");
-        resetAccounts();
         accountService.reset();
     }
-
-    /**
-     * Reset all available accounts to its initial state by retiring all available balances
-     */
-    void resetAccounts() throws ChainException {
-        final Account.Items items = new Account.QueryBuilder().execute(client);
-        final List<Transaction.Builder> txBuilders = new ArrayList<>(items.list.size());
-        while (items.hasNext()) {
-            final Account account = items.next();
-            log.info("reset account: {}", account.alias);
-            final long balance = accountService.getBalance(account.alias).longValue();
-
-            // retire the balance of the given account, to create a '0' balance starting point
-            if (balance > 0) {
-                txBuilders.add(new Transaction.Builder()
-                        .addAction(new Transaction.Action.SpendFromAccount()
-                                .setAccountId(account.id)
-                                .setAssetId(eur.id)
-                                .setAmount(balance))
-                        .addAction(new Transaction.Action.Retire()
-                                .setAssetId(eur.id)
-                                .setAmount(balance)));
-            }
-
-            if (txBuilders.size() > 10) {
-                sendBatch(txBuilders);
-                txBuilders.clear();
-            }
-        }
-        sendBatch(txBuilders);
-    }
-
-    void sendBatch(final List<Transaction.Builder> txBuilders) throws ChainException {
-        final BatchResponse<Transaction.Template> buildTxBatch = Transaction.buildBatch(client, txBuilders);
-        Assert.isTrue(buildTxBatch.errors().isEmpty(), "Errors in build template");
-        final BatchResponse<Transaction.Template> signTxBatch = HsmSigner.signBatch(buildTxBatch.successes());
-        Assert.isTrue(signTxBatch.errors().isEmpty(), "Errors in sign template");
-        final BatchResponse<Transaction.SubmitResponse> submitTxBatch = Transaction.submitBatch(client, signTxBatch.successes());
-        Assert.isTrue(submitTxBatch.errors().isEmpty(), "Errors in submit template");
-    }
-
 }
