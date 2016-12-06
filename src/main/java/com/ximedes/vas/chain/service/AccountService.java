@@ -19,6 +19,7 @@ import com.chain.api.Asset;
 import com.chain.api.Balance;
 import com.chain.api.MockHsm;
 import com.chain.api.Transaction;
+import com.chain.exception.APIException;
 import com.chain.exception.ChainException;
 import com.chain.http.BatchResponse;
 import com.chain.http.Client;
@@ -33,6 +34,7 @@ import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
@@ -83,7 +85,13 @@ public class AccountService {
             Assert.isTrue(buildTxBatch.errors().isEmpty(), "Errors in build template");
             final BatchResponse<Transaction.Template> signTxBatch = HsmSigner.signBatch(buildTxBatch.successes());
             Assert.isTrue(signTxBatch.errors().isEmpty(), "Errors in sign template");
+
             final BatchResponse<Transaction.SubmitResponse> submitTxBatch = Transaction.submitBatch(client, signTxBatch.successes());
+            if (!submitTxBatch.errors().isEmpty()) {
+                for (Map.Entry<Integer, APIException> err : submitTxBatch.errorsByIndex().entrySet()) {
+                    log.warn("Error submitting transaction " + err.getKey() + ": " + err.getValue());
+                }
+            }
             Assert.isTrue(submitTxBatch.errors().isEmpty(), "Errors in submit template");
         }
 

@@ -43,8 +43,8 @@ public class Keys {
         key = findByAlias(alias);
         if (key == null) {
             key = MockHsm.Key.create(client, alias);
-            HsmSigner.addKey(key, MockHsm.getSignerClient(client));
         }
+        HsmSigner.addKey(key, MockHsm.getSignerClient(client));
     }
 
     MockHsm.Key findByAlias(final String alias) throws ChainException {
