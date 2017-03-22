@@ -16,4 +16,4 @@ The application is now started.
 for testing purposes, [gatling](http://gatling.io) tests are created. To see the actual application working, perform the following steps:
 
 1. update file (if needed) ```src/test/scala/vas/chain/Config.scala```
-2. run ```test.sh```
+2. run ```testall.sh```
