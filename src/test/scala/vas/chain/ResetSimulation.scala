@@ -19,7 +19,7 @@ import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
 /**
-  * Tell the simluation to reset to its initial state
+  * Tell the simulation to reset to its initial state
   */
 class ResetSimulation extends Simulation {
 

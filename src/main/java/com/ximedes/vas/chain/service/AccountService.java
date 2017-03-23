@@ -123,7 +123,7 @@ public class AccountService {
         return 0L;
     }
 
-    public Optional<Account> queryAccount(final String accountId) throws ChainException {
+    public Optional<Account> queryAccount(final String accountId) {
         com.chain.api.Account account = findByAlias(accountId);
         if (account != null) {
             return Optional.of(Account.builder().accountId(accountId).balance(getBalance(accountId).intValue()).build());
@@ -154,7 +154,7 @@ public class AccountService {
         while (items.hasNext()) {
             final com.chain.api.Account account = items.next();
             log.info("reset account: {}", account.alias);
-            final long balance = getBalance(account.alias).longValue();
+            final long balance = getBalance(account.alias);
 
             // retire the balance of the given account, to create a '0' balance starting point
             if (balance > 0) {

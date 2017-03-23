@@ -15,21 +15,9 @@
  */
 package com.ximedes.vas.chain.service;
 
-import com.chain.api.Account;
-import com.chain.api.Asset;
-import com.chain.api.Transaction;
-import com.chain.exception.ChainException;
-import com.chain.http.BatchResponse;
-import com.chain.http.Client;
-import com.chain.signing.HsmSigner;
-import com.ximedes.vas.chain.data.Assets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -38,15 +26,11 @@ import java.util.List;
 @Slf4j
 public class SimulationService {
 
-    private final Client client;
     private final AccountService accountService;
-    private final Asset eur;
 
     @Autowired
-    public SimulationService(Client client, AccountService accountService, Assets assets) {
-        this.client = client;
+    public SimulationService(AccountService accountService) {
         this.accountService = accountService;
-        this.eur = assets.getEur();
     }
 
     public void reset() throws Exception {

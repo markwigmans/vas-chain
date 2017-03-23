@@ -19,7 +19,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Created by mawi on 04/11/2016.
+ *
  */
 @SpringBootApplication
 public class Application {

@@ -16,20 +16,17 @@
 package com.ximedes.vas.chain.service;
 
 import com.chain.api.Asset;
-import com.chain.api.MockHsm;
 import com.chain.api.Transaction;
 import com.chain.exception.ChainException;
 import com.chain.http.Client;
 import com.chain.signing.HsmSigner;
 import com.ximedes.vas.chain.data.Assets;
-import com.ximedes.vas.chain.data.Keys;
 import com.ximedes.vas.chain.message.Transfer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -106,6 +103,6 @@ public class TransferService {
     }
 
     boolean keyFound(final Map<String, Object> data) {
-        return data.keySet().stream().filter(k -> KEY.equals(k)).count() != 0;
+        return data.keySet().stream().filter(KEY::equals).count() != 0;
     }
 }

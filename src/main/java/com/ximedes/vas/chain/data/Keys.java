@@ -31,11 +31,17 @@ import javax.annotation.PostConstruct;
 @Component
 public class Keys {
 
-    @Autowired
     private Client client;
-
     @Getter
     private MockHsm.Key key;
+
+    /**
+     * Auto wired constructor
+     */
+    @Autowired
+    public Keys(Client client) {
+        this.client = client;
+    }
 
     @PostConstruct
     public void init() throws ChainException {

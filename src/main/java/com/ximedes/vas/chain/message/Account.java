@@ -21,7 +21,7 @@ import lombok.Builder;
 import lombok.Value;
 
 /**
- * Created by mawi on 19/07/2016.
+ * An account message
  */
 @JsonDeserialize(builder = Account.AccountBuilder.class)
 @Builder

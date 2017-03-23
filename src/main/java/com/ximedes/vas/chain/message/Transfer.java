@@ -21,7 +21,7 @@ import lombok.Builder;
 import lombok.Value;
 
 /**
- * Created by mawi on 19/07/2016.
+ * Message to transfer amount between two accounts.
  */
 @JsonDeserialize(builder = Transfer.TransferBuilder.class)
 @Builder
