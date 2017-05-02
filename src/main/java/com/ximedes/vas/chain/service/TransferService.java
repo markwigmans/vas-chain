@@ -94,7 +94,7 @@ public class TransferService {
             final String from = transaction.inputs.stream().filter(i -> keyFound(i.referenceData)).findFirst().get().accountAlias;
             final Transaction.Output output = transaction.outputs.stream().filter(i -> keyFound(i.referenceData)).findFirst().get();
             final String to = output.accountAlias;
-            final int amount = new Long(output.amount).intValue();
+            final int amount = Long.valueOf(output.amount).intValue();
 
             return Optional.of(Transfer.builder().transferId(transferId).from(from).to(to).amount(amount).build());
         } else {
